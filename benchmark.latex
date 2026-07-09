@@ -1,0 +1,943 @@
+\documentclass[11pt,a4paper]{report}
+
+% ==================================================
+% BIBLIOGRAPHY DATA (embedded so the document is a single self-contained file)
+% ==================================================
+\usepackage{filecontents}
+\begin{filecontents*}{references.bib}
+@misc{owasp_top10,
+  author = {{OWASP Foundation}},
+  title  = {OWASP Top 10:2021 -- The Ten Most Critical Web Application Security Risks},
+  year   = {2021},
+  url    = {https://owasp.org/Top10/}
+}
+@misc{owasp_asvs,
+  author = {{OWASP Foundation}},
+  title  = {OWASP Application Security Verification Standard (ASVS) v4.0},
+  year   = {2021},
+  url    = {https://owasp.org/www-project-application-security-verification-standard/}
+}
+@misc{iso27001,
+  author = {{International Organization for Standardization}},
+  title  = {ISO/IEC 27001:2022 -- Information Security, Cybersecurity and Privacy Protection},
+  year   = {2022},
+  url    = {https://www.iso.org/standard/27001}
+}
+@misc{nist80063,
+  author = {{NIST}},
+  title  = {NIST Special Publication 800-63B -- Digital Identity Guidelines: Authentication and Lifecycle Management},
+  year   = {2020},
+  url    = {https://pages.nist.gov/800-63-3/sp800-63b.html}
+}
+@misc{dgssi,
+  author = {{Direction Générale de la Sécurité des Systèmes d'Information (DGSSI)}},
+  title  = {Directive Nationale de la Sécurité des Systèmes d'Information (DNSSI)},
+  year   = {2023},
+  url    = {https://www.dgssi.gov.ma/}
+}
+@misc{loi0908,
+  author = {{Royaume du Maroc}},
+  title  = {Loi n°09-08 relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel},
+  year   = {2009},
+  url    = {https://www.cndp.ma/}
+}
+@misc{stride,
+  author = {Kohnfelder, Loren and Garg, Praerit},
+  title  = {The Threats to Our Products (STRIDE Threat Model)},
+  year   = {1999},
+  url    = {https://learn.microsoft.com/en-us/security/engineering/threat-modeling}
+}
+@misc{cooplab,
+  author = {{Fondation OCP et UM6P}},
+  title  = {CoopLab -- Laboratoire d'expertise et de soutien aux coopératives marocaines},
+  year   = {2020},
+  url    = {https://ocpfoundation.org/creation-dun-laboratoire-dexpertises-dedie-laccompagnement-du-tissu-cooperatif}
+}
+@misc{odco,
+  author = {{Office du Développement de la Coopération (ODCO)}},
+  title  = {Feuille de route stratégique 2026-2028 et écosystème digital des coopératives},
+  year   = {2026},
+  url    = {https://www.odco.gov.ma/}
+}
+@misc{marocpme_nawat,
+  author = {{Maroc PME}},
+  title  = {Programme NAWAT -- Plateforme de Gestion Déléguée},
+  year   = {2024},
+  url    = {https://nawat.marocpme.gov.ma/}
+}
+@misc{owasp_asi,
+  author = {{OWASP Foundation}},
+  title  = {OWASP Secure Headers Project},
+  year   = {2023},
+  url    = {https://owasp.org/www-project-secure-headers/}
+}
+@misc{cndp,
+  author = {{Commission Nationale de contrôle de la protection des Données à caractère Personnel (CNDP)}},
+  title  = {Guide de conformité à la loi 09-08},
+  year   = {2022},
+  url    = {https://www.cndp.ma/}
+}
+@misc{nist_csf,
+  author = {{NIST}},
+  title  = {NIST Cybersecurity Framework (CSF) 2.0},
+  year   = {2024},
+  url    = {https://www.nist.gov/cyberframework}
+}
+\end{filecontents*}
+
+% ==================================================
+% PACKAGES
+% ==================================================
+\usepackage[a4paper,margin=2.5cm,headheight=15pt]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows.meta,positioning,fit,backgrounds,calc,decorations.pathreplacing}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage[acronym]{glossaries}
+\usepackage[titletoc,title]{appendix}
+\usepackage{colortbl}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{amssymb}
+
+% ==================================================
+% COLOR PALETTE
+% ==================================================
+\definecolor{ocpgreen}{RGB}{0,102,68}
+\definecolor{ocpgreendark}{RGB}{0,64,43}
+\definecolor{ocpgreenlight}{RGB}{223,240,231}
+\definecolor{accentgold}{RGB}{181,151,84}
+\definecolor{riskhigh}{RGB}{198,40,40}
+\definecolor{riskmed}{RGB}{237,140,26}
+\definecolor{risklow}{RGB}{56,142,60}
+\definecolor{greybg}{RGB}{245,245,245}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ocpgreendark,
+  citecolor=ocpgreendark,
+  urlcolor=accentgold,
+  pdftitle={Benchmark et Analyse de Cybersécurité - Plateforme de Gestion des Bénéficiaires},
+  pdfauthor={Stagiaire Ingénieur Cybersécurité - Fondation OCP},
+  pdfsubject={Rapport de Consulting - Analyse Préalable},
+}
+
+% ==================================================
+% HEADERS / FOOTERS
+% ==================================================
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\textcolor{ocpgreendark}{Fondation OCP -- Direction de la Transformation Digitale}}
+\fancyhead[R]{\small\textcolor{ocpgreendark}{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+\fancyfoot[L]{\footnotesize\textcolor{gray}{Confidentiel -- Usage interne}}
+\fancyfoot[R]{\footnotesize\textcolor{gray}{Plateforme de Gestion des Bénéficiaires}}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ==================================================
+% SECTION TITLE FORMATTING
+% ==================================================
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{ocpgreendark}}
+  {\filright\Large\textcolor{accentgold}{CHAPITRE \thechapter}}
+  {8pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{30pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{ocpgreen}}
+  {\thesection}{10pt}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{ocpgreendark}}
+  {\thesubsection}{8pt}{}
+
+% ==================================================
+% LISTINGS (for pseudo-code / config snippets)
+% ==================================================
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{greybg},
+  frame=single,
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{ocpgreendark}\bfseries,
+  commentstyle=\color{gray}\itshape,
+}
+
+% ==================================================
+% ACRONYMS
+% ==================================================
+\makeglossaries
+\newacronym{rbac}{RBAC}{Role-Based Access Control}
+\newacronym{mfa}{MFA}{Multi-Factor Authentication}
+\newacronym{owasp}{OWASP}{Open Worldwide Application Security Project}
+\newacronym{asvs}{ASVS}{Application Security Verification Standard}
+\newacronym{stride}{STRIDE}{Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege}
+\newacronym{cia}{CIA}{Confidentiality, Integrity, Availability}
+\newacronym{sdlc}{SDLC}{Software Development Life Cycle}
+\newacronym{ami}{AMI}{Appel à Manifestation d'Intérêt}
+\newacronym{ess}{ESS}{Économie Sociale et Solidaire}
+\newacronym{pfa}{PFA}{Projet de Fin d'Année}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{csrf}{CSRF}{Cross-Site Request Forgery}
+\newacronym{xss}{XSS}{Cross-Site Scripting}
+\newacronym{sqli}{SQLi}{SQL Injection}
+\newacronym{waf}{WAF}{Web Application Firewall}
+\newacronym{tls}{TLS}{Transport Layer Security}
+\newacronym{jwt}{JWT}{JSON Web Token}
+\newacronym{dgssi}{DGSSI}{Direction Générale de la Sécurité des Systèmes d'Information}
+\newacronym{cndp}{CNDP}{Commission Nationale de contrôle de la protection des Données à caractère Personnel}
+\newacronym{odco}{ODCO}{Office du Développement de la Coopération}
+\newacronym{siem}{SIEM}{Security Information and Event Management}
+\newacronym{rgpd}{RGPD}{Règlement Général sur la Protection des Données}
+\newacronym{iso27001}{ISO 27001}{Norme internationale de gestion de la sécurité de l'information}
+\newacronym{nist}{NIST}{National Institute of Standards and Technology}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.25}
+
+\begin{document}
+
+% ==================================================
+% TITLE PAGE
+% ==================================================
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[ocpgreendark] (current page.north west) rectangle ([yshift=-3cm]current page.north east);
+  \fill[accentgold] ([yshift=-3cm]current page.north west) rectangle ([yshift=-3.15cm]current page.north east);
+  \fill[ocpgreen] (current page.south west) rectangle ([yshift=1.2cm]current page.south east);
+\end{tikzpicture}
+\vspace*{1.1cm}
+\begin{flushleft}
+{\color{white}\Large\bfseries Fondation OCP}\\[2pt]
+{\color{white}\normalsize Direction de la Transformation Digitale}
+\end{flushleft}
+\vspace{2.8cm}
+\begin{center}
+{\Huge\bfseries\color{ocpgreendark} Rapport de Benchmark et d'Analyse\\[4pt] de Cybersécurité}\\[18pt]
+{\Large\color{ocpgreen} Plateforme de Gestion des Bénéficiaires}\\[6pt]
+{\large\color{gray}\itshape Étude comparative des plateformes marocaines de gestion des bénéficiaires\\ et recommandations de sécurité préalables au développement}
+\vspace{1.4cm}
+
+\begin{tikzpicture}
+  \draw[ocpgreen, line width=1.2pt] (0,0) -- (11,0);
+\end{tikzpicture}
+
+\vspace{1.6cm}
+\textbf{Rédigé par :} Mohamed Ziad Cherkaoui \\
+\textbf{Programme :} & Stage d'Analyse -- Phase de Cadrage Fonctionnel et Sécuritaire \\
+\end{tabular}
+
+\vfill
+{\small\color{gray} Ce document a été préparé dans le cadre de la phase de cadrage du projet de\\
+« Plateforme de Gestion des Bénéficiaires » de la Fondation OCP. Il présente un benchmark\\
+de plateformes marocaines comparables ainsi qu'un référentiel de sécurité applicable dès\\
+la phase de conception, conformément au principe de \emph{Security by Design}.}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+\listoftables
+\listoffigures
+\clearpage
+
+% ==================================================
+% EXECUTIVE SUMMARY
+% ==================================================
+\chapter*{Synthèse Exécutive}
+\addcontentsline{toc}{chapter}{Synthèse Exécutive}
+\markboth{Synthèse Exécutive}{Synthèse Exécutive}
+
+La Fondation OCP prévoit de digitaliser l'ensemble du cycle de vie de ses bénéficiaires -- bénéficiaires individuels, coopératives, entrepreneurs sociaux -- à travers une future \textbf{Plateforme de Gestion des Bénéficiaires}. Ce projet, actuellement en phase d'analyse, couvrira l'identification, la candidature, la vérification d'éligibilité légale, l'entretien, l'évaluation, la sélection, l'accompagnement, le suivi et le reporting, pour trois canaux d'entrée : les concours (\emph{Génération Solidaire}, \emph{Lalla Al Moutaâouina}), les \gls{ami} et les candidatures spontanées.
+
+Ce rapport poursuit deux objectifs. Premièrement, il propose un \textbf{benchmark} de dispositifs numériques marocains comparables -- notamment l'écosystème digital de l'\gls{odco} (Sijil Coop, Marketplace des coopératives, TaaWouNYa Academy, Système d'Information Intégré), le \emph{CoopLab} de la Fondation OCP et de l'UM6P avec sa marketplace \emph{Sookoa}, ainsi que la plateforme de gestion déléguée \emph{NAWAT} de Maroc PME -- afin d'inspirer les choix fonctionnels et organisationnels de la future plateforme. Deuxièmement, il fournit une \textbf{analyse de cybersécurité} complète -- authentification, autorisation, gestion des sessions, protection des données, sécurité applicative, modélisation des menaces \gls{stride}, matrice de risques -- accompagnée d'exigences de sécurité et fonctionnelles détaillées, à intégrer \emph{avant} le début du développement.
+
+Le principal enseignement de ce travail est que les plateformes marocaines comparables, bien qu'efficaces sur le plan fonctionnel, communiquent rarement en détail sur leur posture de sécurité technique. La Fondation OCP dispose donc d'une opportunité réelle de se différencier en adoptant, dès la conception, une démarche de \emph{Security by Design} alignée sur l'\gls{owasp} \gls{asvs}, la norme \gls{iso27001} et la directive nationale \gls{dgssi}, plutôt que de traiter la sécurité comme un correctif \emph{a posteriori}.
+
+% ==================================================
+% CHAPTER 1 : INTRODUCTION
+% ==================================================
+\chapter{Introduction et Contexte du Projet}
+
+\section{Contexte général}
+
+Dans le cadre de son stage d'ingénieur en Cybersécurité et Réseaux au sein de la Direction de la Transformation Digitale de la Fondation OCP, l'auteur du présent rapport a été chargé d'une mission d'analyse préalable au développement d'une \textbf{Plateforme de Gestion des Bénéficiaires}. À la date de rédaction, l'application n'a pas encore été développée : le projet se trouve en phase de cadrage fonctionnel, organisationnel et sécuritaire.
+
+La Fondation OCP intervient historiquement dans les domaines de l'éducation, de la recherche, de l'entrepreneuriat social et de l'\gls{ess}, notamment à travers des dispositifs comme le \emph{CoopLab}, lancé en 2020 avec l'Université Mohammed VI Polytechnique (UM6P), qui accompagne les coopératives marocaines et africaines~\cite{cooplab}. La digitalisation de la gestion des bénéficiaires s'inscrit dans la continuité de cette dynamique de transformation numérique du secteur de l'\gls{ess}, déjà engagée par des acteurs institutionnels tels que l'\gls{odco}~\cite{odco}.
+
+\section{Objectifs du présent rapport}
+
+\begin{enumerate}[label=\textbf{(\arabic*)}]
+  \item Réaliser un \textbf{benchmark fonctionnel et sécuritaire} de plateformes marocaines existantes assurant des missions comparables de gestion de bénéficiaires, de coopératives ou d'entrepreneurs ;
+  \item Formuler une \textbf{analyse de cybersécurité} exhaustive couvrant l'authentification, l'autorisation, la protection des données et la sécurité applicative ;
+  \item Produire une \textbf{matrice RBAC}, un \textbf{modèle de menaces STRIDE} et une \textbf{matrice de risques} adaptés au contexte métier de la Fondation OCP ;
+  \item Formaliser un référentiel d'\textbf{exigences de sécurité}, d'\textbf{exigences fonctionnelles} et d'\textbf{exigences non fonctionnelles} exploitable par les équipes de développement dès le lancement du projet.
+\end{enumerate}
+
+\section{Périmètre fonctionnel de la future plateforme}
+
+La future plateforme devra couvrir les domaines fonctionnels suivants~: gestion des bénéficiaires, gestion des coopératives, gestion des entrepreneurs sociaux, gestion des programmes, formations, ateliers, bootcamps, coaching, gestion documentaire, entretiens, sélection, évaluation, accompagnement, reporting, tableaux de bord et statistiques.
+
+\subsection{Canaux d'entrée}
+
+Le processus métier de la Fondation OCP identifie trois canaux d'entrée principaux pour les bénéficiaires potentiels :
+
+\begin{itemize}
+  \item \textbf{Concours} : par exemple \emph{Génération Solidaire} et \emph{Lalla Al Moutaâouina}, deux prix nationaux déjà portés dans l'écosystème marocain de l'\gls{ess} pour respectivement les jeunes coopérateurs et les coopératives féminines ;
+  \item \textbf{\gls{ami}} (Appel à Manifestation d'Intérêt) ;
+  \item \textbf{Candidature spontanée}.
+\end{itemize}
+
+\section{Processus métier cible}
+
+Le processus métier à digitaliser suit un enchaînement séquentiel en neuf étapes, illustré en figure~\ref{fig:workflow}.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[node distance=0.55cm,
+  procstep/.style={rectangle, rounded corners, draw=ocpgreendark, fill=ocpgreenlight, thick, minimum width=8.5cm, minimum height=0.9cm, font=\small\bfseries\color{ocpgreendark}},
+  arrowstyle/.style={-{Latex[length=2mm]}, ocpgreendark, thick}
+]
+\node[procstep] (id) {1. Identification};
+\node[procstep, below=of id] (app) {2. Candidature (Concours / AMI / Spontanée)};
+\node[procstep, below=of app] (legal) {3. Vérification d'éligibilité légale};
+\node[procstep, below=of legal] (int) {4. Entretien};
+\node[procstep, below=of int] (eval) {5. Évaluation};
+\node[procstep, below=of eval] (score) {6. Scoring};
+\node[procstep, below=of score] (sel) {7. Sélection};
+\node[procstep, below=of sel] (support) {8. Accompagnement / Suivi};
+\node[procstep, below=of support] (report) {9. Reporting};
+\draw[arrowstyle] (id) -- (app);
+\draw[arrowstyle] (app) -- (legal);
+\draw[arrowstyle] (legal) -- (int);
+\draw[arrowstyle] (int) -- (eval);
+\draw[arrowstyle] (eval) -- (score);
+\draw[arrowstyle] (score) -- (sel);
+\draw[arrowstyle] (sel) -- (support);
+\draw[arrowstyle] (support) -- (report);
+\end{tikzpicture}
+\caption{Cycle de vie cible du bénéficiaire au sein de la future plateforme}
+\label{fig:workflow}
+\end{figure}
+
+\section{Axes d'évaluation des candidatures}
+
+L'évaluation des candidatures repose sur quatorze axes, présentés au tableau~\ref{tab:axes}, qui devront être reflétés dans le modèle de données et dans les grilles de scoring configurables de la plateforme.
+
+\begin{table}[h!]
+\centering
+\caption{Axes d'évaluation des candidatures}
+\label{tab:axes}
+\begin{tabularx}{\textwidth}{>{\bfseries}lY}
+\toprule
+Axe & Description synthétique \\
+\midrule
+Ressources Humaines & Compétences, gouvernance et organisation de l'équipe porteuse du projet \\
+Faisabilité technique & Maturité technique et opérationnelle du projet \\
+Innovation & Caractère différenciant de la solution ou du produit \\
+Chaîne de valeur & Positionnement dans la chaîne de valeur du secteur \\
+Viabilité économique & Solidité du modèle économique et des projections financières \\
+Qualité & Niveau de qualité des produits, services ou processus \\
+Marketing & Stratégie de commercialisation et de positionnement \\
+Présence digitale & Maturité numérique et visibilité en ligne \\
+Leadership & Capacité de direction et de mobilisation de l'équipe \\
+Entrepreneuriat & Esprit entrepreneurial et capacité d'exécution \\
+Impact social & Bénéfices attendus pour les communautés ciblées \\
+Impact environnemental & Empreinte environnementale du projet \\
+Partenariats & Qualité et solidité de l'écosystème de partenaires \\
+Écosystème \gls{ess} & Ancrage dans l'économie sociale et solidaire \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ==================================================
+% CHAPTER 2 : BENCHMARK
+% ==================================================
+\chapter{Benchmark des Plateformes Marocaines Comparables}
+
+\section{Méthodologie du benchmark}
+
+Le benchmark s'appuie sur des sources publiques (communiqués officiels, presse économique marocaine, sites institutionnels) relatives à quatre dispositifs numériques marocains dont la mission recoupe, en tout ou partie, le périmètre de la future Plateforme de Gestion des Bénéficiaires. Il convient de souligner une limite méthodologique~: les organismes concernés ne publient pas d'audit de sécurité technique détaillé de leurs systèmes d'information. Les observations de sécurité présentées ci-après sont donc formulées comme des \textbf{constats d'architecture fonctionnelle et organisationnelle observables publiquement}, et non comme les conclusions d'un audit technique intrusif, qui n'a pas été réalisé et sortirait du périmètre de ce rapport.
+
+\section{Écosystème digital de l'ODCO}
+
+\subsection{Présentation}
+L'\gls{odco} a déployé, dans le cadre de sa feuille de route stratégique 2026-2028, un écosystème numérique intégré structuré autour de plusieurs briques complémentaires~: \emph{Sijil Coop} (dématérialisation des démarches de création de coopératives), une \emph{Marketplace} pour la commercialisation des produits coopératifs, la \emph{TaaWouNYa Academy} (formation à distance), une \emph{Banque de projets coopératifs}, et un \emph{Système d'Information Intégré (SII)} destiné à orienter les politiques publiques~\cite{odco}. L'Office porte également les prix nationaux \emph{Génération Solidaire} et \emph{Lalla Al Moutaâouina}, deux des trois canaux d'entrée identifiés pour la future plateforme de la Fondation OCP.
+
+\subsection{Utilisateurs et workflow}
+Les utilisateurs typiques incluent les coopératives candidates, les délégations régionales de l'\gls{odco}, les jurys des prix nationaux et les partenaires institutionnels (Agence de Développement du Digital, universités). Le parcours observé suit une logique de guichet unique~: inscription, dématérialisation des pièces, instruction par les délégations régionales, puis suivi de performance via un système de scoring.
+
+\subsection{Forces et faiblesses}
+\textbf{Forces}~: mutualisation de plusieurs services (formation, marketplace, immatriculation) au sein d'un même écosystème ; démarche de télédéclaration généralisée annoncée pour 2026 ; ancrage territorial fort via les délégations régionales.
+\textbf{Faiblesses}~: fragmentation historique entre plusieurs plateformes distinctes avant l'intégration récente ; peu d'informations publiques sur les mécanismes d'authentification et de traçabilité mis en \oe uvre.
+
+\subsection{Constats de sécurité (basés sur l'information publique disponible)}
+Aucune information technique publique ne détaille les mécanismes d'authentification, de chiffrement ou de journalisation de l'écosystème ODCO. La multiplicité des briques (Sijil Coop, Marketplace, Academy, SII) suggère un enjeu de gouvernance des identités transverse (SSO) et de cohérence du contrôle d'accès entre systèmes, qui devra être anticipé pour la Fondation OCP si plusieurs modules sont développés séparément.
+
+\section{CoopLab -- Fondation OCP / UM6P}
+
+\subsection{Présentation}
+Le \emph{CoopLab}, lancé en mai 2020 par la Fondation OCP et l'UM6P, est un laboratoire d'expertise et de soutien aux coopératives marocaines et africaines, hébergé au campus de Benguerir~\cite{cooplab}. Il a notamment développé, en collaboration avec l'école de coding \emph{1337}, la marketplace \emph{Sookoa} (\url{www.sookoa.ma}), dédiée à la commercialisation des produits des coopératives partenaires.
+
+\subsection{Utilisateurs et workflow}
+Les utilisateurs sont les coopératives bénéficiaires (accompagnement technique, formation), les experts et volontaires du réseau \emph{Act4Community}, ainsi que les équipes du dispositif \emph{Al Moutmir}. Le parcours combine accompagnement à distance, renforcement de capacités et accès à un canal de commercialisation digitale.
+
+\subsection{Forces et faiblesses}
+\textbf{Forces}~: proximité directe avec la Fondation OCP, ce qui en fait le dispositif le plus pertinent en tant que socle d'inspiration organisationnelle ; approche \emph{learning by doing} bien documentée ; expérience déjà acquise sur l'accompagnement de coopératives féminines et de jeunes coopérateurs.
+\textbf{Faiblesses}~: le périmètre initial de \emph{Sookoa} est centré sur la commercialisation (e-commerce) plutôt que sur la gestion administrative du cycle de vie complet du bénéficiaire (candidature, évaluation, scoring), ce qui laisse un vide fonctionnel que la future plateforme devra combler.
+
+\subsection{Constats de sécurité}
+En tant que marketplace e-commerce, \emph{Sookoa} implique nécessairement des enjeux de protection des données de paiement et des données personnelles des coopératives partenaires. Aucun détail technique public n'est disponible sur son architecture de sécurité ; ce point renforce l'intérêt, pour la Fondation OCP, de documenter et publier -- au moins en interne -- son propre référentiel de sécurité, contrairement à la pratique observée.
+
+\section{NAWAT -- Maroc PME (Programme de Gestion Déléguée)}
+
+\subsection{Présentation}
+La plateforme \emph{NAWAT} de Maroc PME organise la gestion déléguée des actions d'accompagnement entrepreneurial~: des associations partenaires (« Gestionnaires ») assurent l'identification et la mobilisation des bénéficiaires, tandis qu'un pool de conseillers (« Prestataires »), mobilisé notamment avec l'appui de la GIZ, accompagne les porteurs de projets~\cite{marocpme_nawat}.
+
+\subsection{Utilisateurs et workflow}
+Trois profils-types se dégagent~: le Gestionnaire (association partenaire), le Prestataire (conseiller), et le bénéficiaire final (porteur de projet, auto-entrepreneur, TPE). Le contrat de gestion déléguée signé entre Maroc PME et le Gestionnaire encadre les modalités de partenariat.
+
+\subsection{Forces et faiblesses}
+\textbf{Forces}~: modèle de délégation clair avec des rôles contractuellement définis, proche du besoin de la Fondation OCP de distinguer plusieurs types d'intervenants (administrateur, gestionnaire de programme, évaluateur, partenaire, prestataire).
+\textbf{Faiblesses}~: l'accès à la plateforme est restreint aux seuls partenaires réseaux et conseillers, ce qui limite la comparabilité directe pour la partie « portail bénéficiaire final » ; peu de visibilité publique sur le detail technique de la plateforme.
+
+\subsection{Constats de sécurité}
+Le modèle à trois parties (Maroc PME / Gestionnaire / Prestataire) illustre l'intérêt d'un contrôle d'accès finement segmenté par rôle et par périmètre organisationnel (RBAC combiné à un cloisonnement par entité), un principe directement transposable au modèle RBAC proposé au chapitre~4 pour distinguer les rôles Partenaire, Prestataire et Cooperative.
+
+\section{Synthèse comparative}
+
+\begin{table}[h!]
+\centering
+\caption{Synthèse comparative des dispositifs benchmarés}
+\label{tab:benchmark}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.6cm}YYY}
+\toprule
+Plateforme & Cycle de vie couvert & Digitalisation & Points forts pour la Fondation OCP \\
+\midrule
+Écosystème ODCO & Immatriculation, formation, commercialisation, scoring & Élevée (SII, télédéclaration) & Système de scoring, guichet unique \\
+CoopLab / Sookoa & Accompagnement, e-commerce & Moyenne (marketplace) & Proximité OCP, approche « learning by doing » \\
+NAWAT (Maroc PME) & Sélection, accompagnement délégué & Moyenne (portail partenaires) & Modèle de délégation par rôle (Gestionnaire / Prestataire) \\
+\textbf{Plateforme OCP (cible)} & \textbf{Cycle complet : identification à reporting} & \textbf{À construire (objectif : élevée)} & \textbf{Opportunité de convergence des meilleures pratiques observées} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Analyses SWOT}
+
+\begin{table}[h!]
+\centering
+\caption{SWOT -- Écosystème ODCO}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}Y}
+\toprule
+Forces & Écosystème intégré, ancrage territorial, scoring national \\
+Faiblesses & Historique de fragmentation entre briques, faible visibilité technique \\
+Opportunités & Généralisation de la télédéclaration, extension du SII \\
+Menaces & Volumétrie croissante (69\,000+ coopératives) exposant la plateforme à des risques de disponibilité et de charge \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{SWOT -- CoopLab / Sookoa}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}Y}
+\toprule
+Forces & Ancrage direct Fondation OCP/UM6P, expertise pédagogique \\
+Faiblesses & Périmètre e-commerce, pas de module de scoring/évaluation publié \\
+Opportunités & Extension naturelle vers la future Plateforme de Gestion des Bénéficiaires \\
+Menaces & Données de paiement et données personnelles des coopératives à protéger \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{SWOT -- NAWAT (Maroc PME)}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}Y}
+\toprule
+Forces & Modèle de délégation par rôle clair et contractualisé \\
+Faiblesses & Accès restreint, faible visibilité sur le portail bénéficiaire \\
+Opportunités & Modèle RBAC inspirant pour distinguer Partenaire / Prestataire \\
+Menaces & Dépendance à des tiers (associations Gestionnaires) pour la qualité des données saisies \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Recommandations issues du benchmark}
+\begin{enumerate}[label=\textbf{R\arabic*.}]
+  \item Adopter une architecture modulaire unique (plutôt que des briques disjointes comme observé chez l'ODCO) tout en gardant des modules fonctionnellement séparables ;
+  \item S'inspirer du modèle de scoring national de l'ODCO pour la grille d'évaluation multi-axes (tableau~\ref{tab:axes}) ;
+  \item Reprendre la logique de délégation par rôle de NAWAT pour construire la matrice RBAC (chapitre~4) ;
+  \item Documenter, dès la conception, un référentiel de sécurité que les plateformes benchmarées ne publient pas, afin de faire de la sécurité un différenciateur du projet.
+\end{enumerate}
+
+% ==================================================
+% CHAPTER 3 : CYBERSECURITY ANALYSIS
+% ==================================================
+\chapter{Analyse de Cybersécurité}
+
+\section{Approche générale}
+La sécurité doit être intégrée dès la phase de conception (\emph{Security by Design}) et tout au long du \gls{sdlc} (\emph{Secure SDLC}), conformément aux principes de l'\gls{owasp} \gls{asvs}~\cite{owasp_asvs} et à la norme \gls{iso27001}~\cite{iso27001}. Le tableau~\ref{tab:cia} rappelle le triptyque fondamental sur lequel repose l'ensemble des exigences du présent rapport.
+
+\begin{table}[h!]
+\centering
+\caption{Triade CIA appliquée à la Plateforme de Gestion des Bénéficiaires}
+\label{tab:cia}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.8cm}Y}
+\toprule
+Confidentialité & Protection des données personnelles des bénéficiaires, dossiers de candidature, évaluations et scores contre tout accès non autorisé \\
+Intégrité & Garantie que les scores, décisions de sélection et documents ne peuvent être altérés sans traçabilité \\
+Disponibilité & Continuité de service pendant les périodes critiques (clôture des AMI, concours nationaux) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Authentification}
+\subsection{Politique de mots de passe}
+La plateforme devra imposer une politique de mots de passe conforme aux recommandations \gls{nist} SP 800-63B~\cite{nist80063}~: longueur minimale de 12 caractères, absence de complexité imposée artificiellement au profit de phrases de passe longues, vérification contre des listes de mots de passe compromis, et hachage avec un algorithme résistant tel que \texttt{bcrypt}, \texttt{scrypt} ou \texttt{Argon2id} (jamais de hachage rapide type MD5/SHA-1 seul).
+
+\subsection{Authentification multi-facteurs (MFA)}
+Le \gls{mfa} doit être obligatoire pour tous les rôles à privilèges élevés (Administrateur, Program Manager, Évaluateur) et proposé, au minimum en option forte, pour les bénéficiaires et coopératives lors d'opérations sensibles (soumission finale de candidature, consultation de résultats).
+
+\section{Autorisation}
+\subsection{RBAC et principe du moindre privilège}
+Le contrôle d'accès doit reposer sur un modèle \gls{rbac} strict (détaillé au chapitre~4), complété par le principe du moindre privilège (\emph{least privilege})~: chaque rôle ne doit disposer que des permissions strictement nécessaires à l'exécution de sa mission, avec une revue périodique des droits.
+
+\subsection{Contrôle d'accès au niveau objet}
+Au-delà du RBAC, un contrôle d'accès au niveau de l'objet (\emph{object-level authorization}) est indispensable~: un Évaluateur ne doit consulter que les dossiers qui lui sont assignés, et une Coopérative ne doit accéder qu'à son propre dossier, afin de prévenir les failles de type \emph{Broken Object Level Authorization} (référencées dans l'\gls{owasp} Top 10~\cite{owasp_top10} et l'OWASP API Security Top 10).
+
+\section{Gestion des sessions et journalisation}
+Les sessions doivent expirer après une période d'inactivité configurable, être invalidées côté serveur à la déconnexion, et utiliser des jetons (\gls{jwt} ou identifiants de session opaques) signés et à durée de vie limitée. Chaque action sensible (connexion, modification de score, changement de statut d'un dossier, export de données) doit être journalisée dans un journal d'audit immuable (\emph{append-only}), avec horodatage, identifiant de l'utilisateur et action réalisée, en cohérence avec les exigences d'auditabilité de la Fondation OCP.
+
+\section{Sécurité du téléversement de fichiers}
+Les documents justificatifs (pièces d'identité, statuts de coopérative, business plans) doivent être soumis à~: validation stricte du type MIME réel (et non uniquement de l'extension), limitation de taille, analyse antivirus/antimalware automatisée, stockage hors du répertoire web exécutable, et génération de noms de fichiers non prévisibles pour éviter l'énumération.
+
+\section{Chiffrement et protection des données}
+Toutes les communications doivent être chiffrées en transit via \gls{tls} 1.2 minimum (idéalement 1.3), avec redirection HTTPS systématique et en-tête HSTS. Les données sensibles au repos (documents d'identité, données financières des candidatures) doivent être chiffrées au niveau applicatif ou du stockage. Le traitement des données à caractère personnel doit respecter la loi marocaine n°09-08~\cite{loi0908} et les recommandations de la \gls{cndp}~\cite{cndp}, notamment le principe de minimisation et la durée de conservation limitée.
+
+\section{Sécurité API et développement sécurisé}
+L'ensemble des API exposées (front-end web, applications mobiles éventuelles, intégrations partenaires) doit appliquer~: authentification systématique, limitation de débit (\emph{rate limiting}) pour prévenir les attaques par force brute et le \emph{scraping}, validation stricte des entrées côté serveur, et absence d'exposition d'identifiants internes séquentiels (préférer des UUID).
+
+\subsection{OWASP Top 10 et vulnérabilités classiques}
+Le tableau~\ref{tab:owasp} synthétise les principales catégories de vulnérabilités de l'\gls{owasp} Top 10~\cite{owasp_top10} et leur traitement attendu dans le contexte du projet.
+
+\begin{table}[h!]
+\centering
+\caption{Vulnérabilités OWASP Top 10 et mesures attendues}
+\label{tab:owasp}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.6cm}Y}
+\toprule
+Catégorie & Mesure attendue \\
+\midrule
+Broken Access Control & RBAC strict + contrôle au niveau objet + tests d'autorisation systématiques \\
+Défaillances cryptographiques & TLS 1.2+/1.3, hachage Argon2id, gestion des secrets via un coffre-fort (vault) \\
+Injection (SQLi) & Requêtes paramétrées / ORM, jamais de concaténation de chaînes SQL \\
+Conception non sécurisée & Modélisation des menaces STRIDE dès la conception (chapitre~5) \\
+Mauvaise configuration de sécurité & Durcissement des serveurs, suppression des comptes/pages par défaut, en-têtes de sécurité \\
+Composants vulnérables & Inventaire des dépendances (SBOM) et mise à jour continue \\
+Identification et authentification défaillantes & MFA, politique de mots de passe robuste, verrouillage après tentatives échouées \\
+Défaillances d'intégrité logicielle et des données & Signature des pipelines CI/CD, vérification d'intégrité des artefacts \\
+Défaillances de journalisation et de surveillance & Journal d'audit centralisé, alerte sur anomalies (via un futur SIEM) \\
+Falsification de requête côté serveur (SSRF) & Liste blanche stricte des destinations réseau sortantes \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{XSS, CSRF et en-têtes de sécurité}
+La prévention du \gls{xss} repose sur l'échappement systématique des sorties et l'usage d'un \emph{Content Security Policy} strict. La prévention du \gls{csrf} repose sur des jetons anti-CSRF pour toute action de modification d'état initiée depuis un formulaire. Les en-têtes de sécurité recommandés par l'OWASP Secure Headers Project~\cite{owasp_asi} (\texttt{Content-Security-Policy}, \texttt{X-Content-Type-Options}, \texttt{X-Frame-Options}, \texttt{Strict-Transport-Security}, \texttt{Referrer-Policy}) doivent être activés par défaut.
+
+\section{Secure SDLC et sécurité by design}
+Le tableau~\ref{tab:sdlc} illustre l'intégration de la sécurité à chaque étape du cycle de développement.
+
+\begin{table}[h!]
+\centering
+\caption{Intégration de la sécurité dans le cycle de développement}
+\label{tab:sdlc}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3cm}Y}
+\toprule
+Étape SDLC & Activité de sécurité \\
+\midrule
+Exigences & Exigences de sécurité formalisées (chapitre~6) dès le cahier des charges \\
+Conception & Modélisation des menaces STRIDE, revue d'architecture \\
+Développement & Directives de codage sécurisé, revue de code, analyse statique (SAST) \\
+Tests & Tests d'intrusion, analyse dynamique (DAST), tests d'autorisation \\
+Déploiement & Durcissement de l'infrastructure, gestion des secrets, scan de configuration \\
+Exploitation & Supervision continue, gestion des correctifs, réponse à incident \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ==================================================
+% CHAPTER 4 : RBAC
+% ==================================================
+\chapter{Modèle de Contrôle d'Accès (RBAC)}
+
+\section{Rôles identifiés}
+Huit rôles ont été identifiés en cohérence avec le processus métier et le benchmark du chapitre~2~: Administrateur, Program Manager, Évaluateur, Employé, Bénéficiaire, Coopérative, Partenaire et Prestataire.
+
+\section{Matrice RBAC}
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Matrice RBAC -- permissions par rôle}
+\label{tab:rbac}
+\begin{tabular}{p{3.4cm}ccccccc}
+\toprule
+\textbf{Permission} & \textbf{Admin} & \textbf{Prog. Mgr} & \textbf{Évaluateur} & \textbf{Employé} & \textbf{Bénéf.} & \textbf{Coop.} & \textbf{Partenaire/Prestataire} \\
+\midrule
+Gestion des utilisateurs \& rôles & \checkmark & -- & -- & -- & -- & -- & -- \\
+Création / config. des programmes & \checkmark & \checkmark & -- & -- & -- & -- & -- \\
+Consultation des candidatures assignées & \checkmark & \checkmark & \checkmark & \checkmark & -- & -- & -- \\
+Saisie des évaluations / scores & \checkmark & -- & \checkmark & -- & -- & -- & -- \\
+Validation de la sélection finale & \checkmark & \checkmark & -- & -- & -- & -- & -- \\
+Soumission d'une candidature & -- & -- & -- & -- & \checkmark & \checkmark & -- \\
+Téléversement de documents & -- & -- & -- & \checkmark & \checkmark & \checkmark & \checkmark \\
+Consultation de son propre dossier & -- & -- & -- & -- & \checkmark & \checkmark & -- \\
+Planification des entretiens & \checkmark & \checkmark & -- & \checkmark & -- & -- & -- \\
+Saisie des rapports d'accompagnement & -- & \checkmark & -- & \checkmark & -- & -- & \checkmark \\
+Accès aux tableaux de bord globaux & \checkmark & \checkmark & -- & -- & -- & -- & -- \\
+Export des statistiques & \checkmark & \checkmark & -- & -- & -- & -- & -- \\
+Consultation des journaux d'audit & \checkmark & -- & -- & -- & -- & -- & -- \\
+Gestion des partenariats & \checkmark & \checkmark & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Principes complémentaires}
+\begin{itemize}
+  \item \textbf{Séparation des tâches} : l'Évaluateur qui note un dossier ne doit pas pouvoir valider seul la sélection finale, réservée au Program Manager et à l'Administrateur ;
+  \item \textbf{Cloisonnement par organisation} : un Partenaire ou Prestataire ne doit voir que les dossiers des bénéficiaires qui lui sont explicitement rattachés, à l'image du modèle observé chez NAWAT (Gestionnaire / Prestataire) ;
+  \item \textbf{Révision périodique des droits} : audit trimestriel des comptes à privilèges (Administrateur, Program Manager).
+\end{itemize}
+
+% ==================================================
+% CHAPTER 5 : THREAT MODEL & RISK MATRIX
+% ==================================================
+\chapter{Modélisation des Menaces (STRIDE) et Matrice de Risques}
+
+\section{Modèle de menaces STRIDE}
+Le modèle \gls{stride}~\cite{stride} permet de structurer l'identification des menaces selon six catégories~: Spoofing (usurpation), Tampering (altération), Repudiation (répudiation), Information disclosure (divulgation d'information), Denial of Service (déni de service) et Elevation of Privilege (élévation de privilège).
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Modèle de menaces STRIDE appliqué à la Plateforme de Gestion des Bénéficiaires}
+\label{tab:stride}
+\begin{tabularx}{\textwidth}{p{1.6cm}p{2.7cm}Yp{1.3cm}p{1.3cm}}
+\toprule
+\textbf{Catégorie} & \textbf{Menace} & \textbf{Description / Impact} & \textbf{Prob.} & \textbf{Risque} \\
+\midrule
+Spoofing & Usurpation d'identité d'un Évaluateur & Un attaquant se connecte avec des identifiants volés et manipule des scores & Moyenne & \cellcolor{riskhigh!70}Élevé \\
+Tampering & Altération d'un score après soumission & Modification non tracée d'une évaluation, remettant en cause l'équité de la sélection & Moyenne & \cellcolor{riskhigh!70}Élevé \\
+Repudiation & Négation d'une action de validation & Un Program Manager nie avoir validé une sélection en l'absence de journal d'audit fiable & Faible & \cellcolor{riskmed!70}Moyen \\
+Information Disclosure & Fuite de documents d'identité de bénéficiaires & Exposition de données personnelles sensibles (CIN, RIB) via un contrôle d'accès défaillant & Moyenne & \cellcolor{riskhigh!70}Élevé \\
+Denial of Service & Indisponibilité pendant la clôture d'un AMI & Surcharge du serveur lors du pic de soumissions, empêchant le dépôt de candidatures & Élevée & \cellcolor{riskhigh!70}Élevé \\
+Elevation of Privilege & Contournement du RBAC par un Bénéficiaire & Accès non autorisé aux fonctions d'Évaluateur via une faille d'autorisation applicative & Faible & \cellcolor{riskmed!70}Moyen \\
+Tampering & Injection SQL sur le formulaire de candidature & Compromission de la base de données via une entrée non validée & Moyenne & \cellcolor{riskhigh!70}Élevé \\
+Spoofing & Hameçonnage ciblant les coopératives & Usurpation de l'identité de la plateforme pour collecter des identifiants & Moyenne & \cellcolor{riskmed!70}Moyen \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Matrice de risques (Probabilité x Impact)}
+
+\begin{table}[h!]
+\centering
+\caption{Matrice de risques -- Probabilité x Impact}
+\label{tab:riskmatrix}
+\begin{tabular}{p{2.6cm}p{3cm}p{3cm}p{3cm}}
+\toprule
+ & \textbf{Impact faible} & \textbf{Impact moyen} & \textbf{Impact élevé} \\
+\midrule
+\textbf{Probabilité élevée} & \cellcolor{riskmed!50}Moyen & \cellcolor{riskhigh!60}Élevé & \cellcolor{riskhigh!90}Critique \\
+\textbf{Probabilité moyenne} & \cellcolor{risklow!60}Faible & \cellcolor{riskmed!50}Moyen & \cellcolor{riskhigh!60}Élevé \\
+\textbf{Probabilité faible} & \cellcolor{risklow!80}Faible & \cellcolor{risklow!60}Faible & \cellcolor{riskmed!50}Moyen \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Les risques classés « Critique » ou « Élevé » (usurpation d'Évaluateur, altération de scores, fuite de documents d'identité, déni de service en période de clôture d'AMI, injection SQL) doivent faire l'objet d'exigences de sécurité prioritaires, formalisées au chapitre suivant.
+
+% ==================================================
+% CHAPTER 6 : REQUIREMENTS
+% ==================================================
+\chapter{Exigences de Sécurité, Fonctionnelles et Non Fonctionnelles}
+
+\section{Exigences de sécurité}
+\begin{longtable}{p{2.4cm}p{11cm}}
+\caption{Exigences de sécurité (REQ-SEC)}\label{tab:reqsec}\\
+\toprule
+\textbf{Identifiant} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Identifiant} & \textbf{Description} \\
+\midrule
+\endhead
+REQ-SEC-001 & Hachage des mots de passe avec Argon2id (ou bcrypt/scrypt à défaut) \\
+REQ-SEC-002 & Chiffrement HTTPS/TLS obligatoire sur l'ensemble des échanges \\
+REQ-SEC-003 & Authentification multi-facteurs pour les rôles Administrateur, Program Manager et Évaluateur \\
+REQ-SEC-004 & Verrouillage temporaire du compte après 5 tentatives de connexion échouées \\
+REQ-SEC-005 & Expiration automatique des sessions après 30 minutes d'inactivité \\
+REQ-SEC-006 & Contrôle d'accès basé sur les rôles (RBAC) pour toutes les fonctionnalités \\
+REQ-SEC-007 & Contrôle d'accès au niveau objet (un utilisateur n'accède qu'à ses propres données) \\
+REQ-SEC-008 & Journalisation immuable de toutes les actions sensibles (connexion, scoring, validation) \\
+REQ-SEC-009 & Conservation des journaux d'audit pendant 12 mois minimum \\
+REQ-SEC-010 & Validation stricte du type MIME réel des fichiers téléversés \\
+REQ-SEC-011 & Analyse antivirus automatisée de tout document téléversé \\
+REQ-SEC-012 & Limitation de la taille des fichiers téléversés (ex. 10 Mo) \\
+REQ-SEC-013 & Stockage des documents hors du répertoire web exécutable \\
+REQ-SEC-014 & Chiffrement au repos des documents d'identité et données financières \\
+REQ-SEC-015 & Requêtes paramétrées / usage d'un ORM pour prévenir l'injection SQL \\
+REQ-SEC-016 & Échappement systématique des sorties pour prévenir les attaques XSS \\
+REQ-SEC-017 & Jetons anti-CSRF sur tous les formulaires de modification d'état \\
+REQ-SEC-018 & En-têtes de sécurité HTTP (CSP, HSTS, X-Frame-Options, X-Content-Type-Options) \\
+REQ-SEC-019 & Limitation de débit (rate limiting) sur les endpoints d'authentification et l'API \\
+REQ-SEC-020 & Validation des entrées côté serveur pour tous les champs de formulaire \\
+REQ-SEC-021 & Utilisation d'identifiants non séquentiels (UUID) pour les ressources exposées \\
+REQ-SEC-022 & Séparation des tâches entre évaluation et validation de la sélection finale \\
+REQ-SEC-023 & Revue trimestrielle des comptes et permissions à privilèges \\
+REQ-SEC-024 & Gestion centralisée des secrets (API keys, identifiants de base de données) via un coffre-fort \\
+REQ-SEC-025 & Sauvegardes chiffrées et testées régulièrement (plan de reprise d'activité) \\
+REQ-SEC-026 & Plan de réponse à incident documenté et testé annuellement \\
+REQ-SEC-027 & Inventaire et mise à jour continue des dépendances logicielles (SBOM) \\
+REQ-SEC-028 & Tests d'intrusion réalisés avant chaque mise en production majeure \\
+REQ-SEC-029 & Conformité à la loi 09-08 sur la protection des données personnelles \\
+REQ-SEC-030 & Anonymisation ou pseudonymisation des données à des fins statistiques et de reporting \\
+REQ-SEC-031 & Politique de rétention et de suppression des données après la fin du cycle de vie du bénéficiaire \\
+REQ-SEC-032 & Supervision continue via un dispositif de type SIEM avec alerte sur anomalies \\
+\bottomrule
+\end{longtable}
+
+\section{Exigences fonctionnelles}
+\begin{longtable}{p{2cm}p{11.4cm}}
+\caption{Exigences fonctionnelles (FR)}\label{tab:reqfr}\\
+\toprule
+\textbf{Identifiant} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Identifiant} & \textbf{Description} \\
+\midrule
+\endhead
+FR-001 & Inscription et création de profil bénéficiaire \\
+FR-002 & Téléversement de documents justificatifs \\
+FR-003 & Soumission d'une candidature via le canal Concours \\
+FR-004 & Soumission d'une candidature via le canal AMI \\
+FR-005 & Soumission d'une candidature spontanée \\
+FR-006 & Vérification automatisée de l'éligibilité légale (statuts, pièces obligatoires) \\
+FR-007 & Planification et gestion des entretiens \\
+FR-008 & Saisie des grilles d'évaluation multi-axes (tableau~\ref{tab:axes}) \\
+FR-009 & Calcul automatique du score global pondéré \\
+FR-010 & Classement des candidatures par score \\
+FR-011 & Validation de la sélection finale par le Program Manager \\
+FR-012 & Notification automatique des résultats aux candidats \\
+FR-013 & Gestion du profil des coopératives \\
+FR-014 & Gestion du profil des entrepreneurs sociaux \\
+FR-015 & Création et configuration des programmes d'accompagnement \\
+FR-016 & Gestion des formations, ateliers et bootcamps \\
+FR-017 & Inscription aux sessions de formation \\
+FR-018 & Suivi de présence aux ateliers et bootcamps \\
+FR-019 & Gestion des séances de coaching individuel \\
+FR-020 & Gestion documentaire centralisée (GED) \\
+FR-021 & Génération automatique de rapports de suivi \\
+FR-022 & Tableau de bord des indicateurs par programme \\
+FR-023 & Tableau de bord global multi-programmes \\
+FR-024 & Export des statistiques (CSV, PDF, Excel) \\
+FR-025 & Calendrier des échéances (AMI, concours, entretiens) \\
+FR-026 & Messagerie interne entre intervenants \\
+FR-027 & Historique complet du parcours d'un bénéficiaire \\
+FR-028 & Gestion des partenariats et prestataires \\
+FR-029 & Module d'assistance IA pour l'orientation des utilisateurs \\
+FR-030 & Gestion multi-utilisateurs avec rôles RBAC \\
+FR-031 & Recherche et filtrage avancés des dossiers \\
+\bottomrule
+\end{longtable}
+
+\section{Exigences non fonctionnelles}
+
+\begin{table}[h!]
+\centering
+\caption{Exigences non fonctionnelles}
+\label{tab:nfr}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3cm}Y}
+\toprule
+Catégorie & Exigence \\
+\midrule
+Performance & Temps de réponse inférieur à 2 secondes pour 95\% des requêtes en conditions normales \\
+Disponibilité & Taux de disponibilité cible de 99,5\%, avec plan de montée en charge pour les périodes de clôture d'AMI \\
+Confidentialité & Chiffrement systématique des données personnelles en transit et au repos \\
+Intégrité & Traçabilité de toute modification des scores et décisions de sélection \\
+Traçabilité & Journalisation exhaustive et horodatée des actions utilisateurs \\
+Auditabilité & Export des journaux d'audit pour revue par la Direction de l'Audit interne \\
+Maintenabilité & Architecture modulaire documentée facilitant l'évolution fonctionnelle \\
+Scalabilité & Capacité à absorber les pics de charge lors des campagnes de concours nationaux \\
+Accessibilité & Interface conforme aux standards d'accessibilité numérique (WCAG 2.1 niveau AA) \\
+Portabilité & Compatibilité multi-navigateurs et adaptation mobile (responsive design) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ==================================================
+% CHAPTER 7 : ARCHITECTURE & DIAGRAMS
+% ==================================================
+\chapter{Architecture Cible et Diagrammes}
+
+\section{Architecture applicative cible}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[node distance=0.5cm and 1.2cm,
+  layer/.style={rectangle, rounded corners, draw=ocpgreendark, fill=ocpgreenlight, thick, minimum width=3.6cm, minimum height=1cm, font=\small\bfseries\color{ocpgreendark}, align=center},
+  arrowstyle/.style={-{Latex[length=2mm]}, ocpgreendark, thick}
+]
+\node[layer] (client) {Client Web / Mobile};
+\node[layer, below=of client] (waf) {WAF / Reverse Proxy (TLS)};
+\node[layer, below=of waf] (api) {API Gateway (Auth, Rate Limiting)};
+\node[layer, below left=of api, xshift=-1.2cm] (svc1) {Service Bénéficiaires};
+\node[layer, below=of api] (svc2) {Service Évaluation / Scoring};
+\node[layer, below right=of api, xshift=1.2cm] (svc3) {Service Documents (GED)};
+\node[layer, below=1.4cm of svc2] (db) {Base de données chiffrée};
+\node[layer, right=1cm of db] (audit) {Journal d'audit (append-only)};
+\draw[arrowstyle] (client) -- (waf);
+\draw[arrowstyle] (waf) -- (api);
+\draw[arrowstyle] (api) -- (svc1);
+\draw[arrowstyle] (api) -- (svc2);
+\draw[arrowstyle] (api) -- (svc3);
+\draw[arrowstyle] (svc1) -- (db);
+\draw[arrowstyle] (svc2) -- (db);
+\draw[arrowstyle] (svc3) -- (db);
+\draw[arrowstyle] (svc2) -- (audit);
+\draw[arrowstyle] (svc1) -- (audit);
+\end{tikzpicture}
+\caption{Architecture applicative cible en couches (simplifiée)}
+\label{fig:architecture}
+\end{figure}
+
+\section{Flux d'authentification}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[node distance=0.6cm,
+  procstep/.style={rectangle, rounded corners, draw=ocpgreendark, fill=ocpgreenlight, thick, minimum width=8cm, minimum height=0.85cm, font=\small\color{ocpgreendark}},
+  arrowstyle/.style={-{Latex[length=2mm]}, ocpgreendark, thick}
+]
+\node[procstep] (s1) {1. Saisie identifiants (email + mot de passe)};
+\node[procstep, below=of s1] (s2) {2. Vérification du hash (Argon2id) côté serveur};
+\node[procstep, below=of s2] (s3) {3. Demande du second facteur (MFA)};
+\node[procstep, below=of s3] (s4) {4. Validation MFA};
+\node[procstep, below=of s4] (s5) {5. Émission d'un jeton de session signé (durée limitée)};
+\node[procstep, below=of s5] (s6) {6. Journalisation de la connexion (audit trail)};
+\draw[arrowstyle] (s1) -- (s2);
+\draw[arrowstyle] (s2) -- (s3);
+\draw[arrowstyle] (s3) -- (s4);
+\draw[arrowstyle] (s4) -- (s5);
+\draw[arrowstyle] (s5) -- (s6);
+\end{tikzpicture}
+\caption{Flux d'authentification recommandé}
+\label{fig:authflow}
+\end{figure}
+
+\section{Couches de sécurité (Defense in Depth)}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \foreach \i/\lyrlabel/\c in {0/{Sécurité périmétrique (WAF, TLS)}/ocpgreendark,1/{Sécurité applicative (RBAC, validation entrées)}/ocpgreen,2/{Sécurité des données (chiffrement, minimisation)}/accentgold,3/{Supervision (journalisation, SIEM, réponse incident)}/ocpgreendark}
+  {
+    \pgfmathsetmacro{\w}{9-\i*1.6}
+    \node[rectangle, draw=\c, fill=\c!15, thick, minimum width=\w cm, minimum height=1cm, font=\small\bfseries\color{\c}] at (0,-\i*1.15) {\lyrlabel};
+  }
+\end{tikzpicture}
+\caption{Modèle de défense en profondeur applicable à la plateforme}
+\label{fig:layers}
+\end{figure}
+
+% ==================================================
+% CHAPTER 8 : CONCLUSION
+% ==================================================
+\chapter{Conclusion et Recommandations Stratégiques}
+
+Le benchmark réalisé montre que les dispositifs numériques marocains comparables -- écosystème \gls{odco}, \emph{CoopLab}/\emph{Sookoa} de la Fondation OCP elle-même, et \emph{NAWAT} de Maroc PME -- couvrent chacun une partie du cycle de vie du bénéficiaire (immatriculation, formation, commercialisation, ou délégation de l'accompagnement), sans qu'aucun ne semble intégrer, dans une même plateforme documentée publiquement, l'ensemble du parcours identification-candidature-évaluation-sélection-accompagnement-reporting. La future Plateforme de Gestion des Bénéficiaires de la Fondation OCP a donc l'opportunité de se positionner comme un dispositif de référence, à condition d'intégrer la cybersécurité \textbf{avant}, et non après, le développement.
+
+\section{Pourquoi la sécurité doit précéder le développement}
+\begin{itemize}
+  \item Le coût de correction d'une faille de conception (par exemple un modèle RBAC mal pensé) est significativement plus élevé une fois le code écrit que lors de la phase d'analyse ;
+  \item Les données traitées (identité, situation économique, coordonnées bancaires potentielles) relèvent de données à caractère personnel sensibles au sens de la loi 09-08, ce qui impose une conformité dès la conception (\emph{privacy by design}) ;
+  \item Les périodes de forte affluence (clôture des AMI et concours nationaux) exposent la plateforme à des risques de disponibilité qui ne peuvent être traités \emph{a posteriori} sans refonte architecturale.
+\end{itemize}
+
+\section{Recommandations prioritaires}
+\begin{enumerate}[label=\textbf{Recommandation \arabic*.}]
+  \item Valider le modèle RBAC (chapitre~4) et le modèle de menaces STRIDE (chapitre~5) avant le début du développement, en atelier avec les équipes métier et techniques ;
+  \item Intégrer les 32 exigences de sécurité (REQ-SEC-001 à 032) au cahier des charges technique dès l'appel d'offres ou le cadrage interne ;
+  \item Désigner un référent sécurité applicative au sein de l'équipe projet, en lien avec la \gls{dgssi} pour les aspects de conformité nationale ;
+  \item Prévoir un audit de sécurité indépendant (test d'intrusion) avant chaque mise en production majeure ;
+  \item Capitaliser sur l'expérience du CoopLab et sur le modèle de scoring de l'ODCO pour accélérer la phase de conception fonctionnelle, tout en comblant leur lacune commune en matière de documentation de sécurité.
+\end{enumerate}
+
+La Fondation OCP dispose ainsi d'une feuille de route claire pour transformer une contrainte réglementaire et technique en avantage différenciant, au service de la confiance des bénéficiaires, coopératives et partenaires qui utiliseront la future plateforme.
+
+\clearpage
+\printbibliography[heading=bibintoc,title={Références}]
+
+\clearpage
+\begin{appendices}
+\chapter{Annexes}
+
+\section{Glossaire des acronymes}
+\printglossary[type=\acronymtype,title={Liste des acronymes},nonumberlist]
+
+\section{Tableau récapitulatif des rôles RBAC}
+\begin{table}[h!]
+\centering
+\small
+\caption{Rôles et responsabilités (annexe)}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3cm}Y}
+\toprule
+Rôle & Responsabilité principale \\
+\midrule
+Administrateur & Gouvernance globale du système, gestion des rôles et des accès \\
+Program Manager & Pilotage des programmes, validation de la sélection finale \\
+Évaluateur & Évaluation et scoring des candidatures assignées \\
+Employé & Support opérationnel (entretiens, accompagnement, saisie) \\
+Bénéficiaire & Soumission et suivi de sa propre candidature \\
+Coopérative & Soumission et suivi du dossier de la coopérative \\
+Partenaire & Contribution à l'accompagnement dans le cadre d'un partenariat \\
+Prestataire & Prestation de services d'accompagnement délégués \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Note méthodologique sur les sources du benchmark}
+Les informations relatives aux plateformes ODCO, CoopLab/Sookoa et NAWAT proviennent de communiqués officiels et d'articles de presse économique marocaine cités en bibliographie. Aucun accès technique direct aux systèmes d'information de ces organismes n'a été réalisé ; les constats de sécurité formulés au chapitre~2 sont donc des observations de nature organisationnelle et fonctionnelle, destinées à orienter la réflexion sur la future plateforme, et non un audit de sécurité de ces tiers.
+
+\end{appendices}
+
+\end{document}
